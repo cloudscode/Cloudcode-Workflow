@@ -2,7 +2,6 @@ package com.cloudcode.workflow;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 import com.cloudcode.framework.annotation.ModuleConfig;
@@ -16,7 +15,7 @@ import com.cloudcode.workflow.model.WorkFlowInfo;
 import com.cloudcode.workflow.model.WorkFlowTree;
 
 @ModuleConfig(name = ProjectConfig.NAME, domainPackages = { "com.cloudcode.workflow.model" })
-@ComponentScan(basePackages = { "com.cloudcode.workflow.*" }, nameGenerator = ProjectBeanNameGenerator.class, excludeFilters = { @org.springframework.context.annotation.ComponentScan.Filter({ Configuration.class }) })
+@ComponentScan(basePackages={"com.cloudcode.workflow.*"},nameGenerator=ProjectBeanNameGenerator.class)
 @PropertySource(name = "cloudcode.evn", value = { "classpath:proj.properties" })
 public class ProjectConfig {
 	public static final String NAME = "wf";
