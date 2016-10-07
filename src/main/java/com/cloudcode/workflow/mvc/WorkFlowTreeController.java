@@ -7,11 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +20,13 @@ import com.cloudcode.framework.controller.CrudController;
 import com.cloudcode.framework.rest.ReturnResult;
 import com.cloudcode.framework.service.ServiceResult;
 import com.cloudcode.framework.utils.BeanUpdater;
+import com.cloudcode.framework.utils.Check;
 import com.cloudcode.framework.utils.PageRange;
 import com.cloudcode.framework.utils.PaginationSupport;
-import com.cloudcode.framework.utils.StringUtils;
 import com.cloudcode.workflow.dao.WorkFlowTreeDao;
 import com.cloudcode.workflow.model.WorkFlowTree;
+
+import net.sf.json.JSONArray;
 
 @Controller
 @RequestMapping("/workFlowTrees")
@@ -37,9 +36,9 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 	
 	@RequestMapping(value = "/createWorkFlowTree", method = RequestMethod.POST)
 	public @ResponseBody
-	void createWorkFlowTree(@ModelAttribute WorkFlowTree workFlowTree, HttpServletRequest request) {
-		String text = request.getParameter("text");
+	Object createWorkFlowTree(@ModelAttribute WorkFlowTree workFlowTree, HttpServletRequest request) {
 		workFlowTreeDao.addWorkFlowTree(workFlowTree);
+		return new ServiceResult(ReturnResult.SUCCESS);
 	}
 
 	@RequestMapping(value = "/{id}/updateWorkFlowTree", method = { RequestMethod.POST,
@@ -50,12 +49,10 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 		WorkFlowTree workFlowTree = workFlowTreeDao.loadObject(id);
 		if (workFlowTree != null) {
 			BeanUpdater.copyProperties(updateObject, workFlowTree);
-			// workFlowTree.springframework.beans.BeanUtils.copyProperties(updateObject,
-			// workFlowTree);
 			workFlowTreeDao.updateObject(workFlowTree);
 			return new ServiceResult(ReturnResult.SUCCESS);
 		}
-		return null;
+		return new ServiceResult(ReturnResult.FAILURE);
 	}
 
 	@RequestMapping(value = "workFlowTreeList")
@@ -81,7 +78,6 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/tree/detail.ftl");
 		modelAndView.addObject("workFlowTree", workFlowTree);
-		modelAndView.addObject("result", "cloudcode");
 		modelAndView.addObject("entityAction", "update");
 		return modelAndView;
 	}
@@ -108,12 +104,12 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 			RequestMethod.POST, RequestMethod.GET }, produces = "application/json")
 	public @ResponseBody
 	JSONArray queryDataTreeByPid(HttpServletRequest request) {
-		String id =request.getParameter("id");
+		String node =request.getParameter("id");
 		List<WorkFlowTree> lists = null;
-		if(StringUtils.isEmpty(id)){
+		if (Check.isEmpty(node) || "root".equals(node)) {
 			lists = workFlowTreeDao.queryDataTreeByPid("root");
 		}else{
-			lists = workFlowTreeDao.queryDataTreeByPid(id);
+			lists = workFlowTreeDao.queryDataTreeByPid(node);
 		}
 		List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
 
@@ -121,8 +117,19 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 			Map<String, Object> maps = new HashMap<String, Object>();
 			maps.put("id", workFlowTree.getId());
 			maps.put("name", workFlowTree.getName());
-			maps.put("pId", workFlowTree.getNode());
-			maps.put("isParent", workFlowTree.getNode()==null?false:true);
+			//maps.put("node", workFlowTree.getNode());
+			maps.put("text", workFlowTree.getName());
+			maps.put("nocheck", false);
+			maps.put("node", workFlowTree.getNode());
+			if (Check.isEmpty(node) || "root".equals(node)) {
+				maps.put("leaf","1");
+				maps.put("isParent",true);
+			}
+			else{
+				maps.put("leaf","0");
+				maps.put("isParent",false);
+			}
+			//maps.put("isParent", workFlowTree.getNode()==null?false:true);
 			listMap.add(maps);
 		}
 		return JSONArray.fromObject(listMap);
@@ -135,5 +142,12 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 	@RequestMapping(value = "/{node}/queryDeployPdTreeList")
 	public @ResponseBody Object queryDeployPdTreeList(@PathVariable("node") String node,HttpServletRequest request) {
 		return workFlowTreeDao.queryDeployPdTreeList(node);
+	}
+	
+	@RequestMapping(value = "tree")
+	public ModelAndView tree() {
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/menu/tree.ftl");
+		return modelAndView;
 	}
 }

@@ -42,97 +42,46 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 	font-weight: normal;
 	border-width: 1px 0 0;
 }
-</style>
-<#include "classpath:com/cloudcode/framework/common/ftl/vendor.ftl"/>
-<!-- REQUIRED scripts for 5layout widget -->
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/layout/jquery.layout-latest.js"></script>
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/layout/jquery.layout.resizePaneAccordions-latest.js"></script>
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/layout/themeswitchertool.js"></script> 
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/ztree/3.5.15/js/jquery.ztree.core-3.5.js"></script>
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/ztree/3.5.15/js/jquery.ztree.exedit-3.5.min.js"></script>
-<script type="text/javascript" src="${request.getContextPath()}/static/jquery/ztree/3.5.15/js/jquery.ztree.excheck-3.5.min.js"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		myLayout = $('body').layout({
+.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+	</style>
+</head>
+<body>
+	
+	<div class="panel ui-layout-west" style="display: none;">
+		<div class="panel panel-default">
+			  <div class="panel-body">
+			  <div class="container-fluid">
+			        <span xtype="button" config="text:'添加' , onClick : page.Add "></span>
+			        <span xtype="button" config="text:'刷新' , onClick : page.Refresh "></span>
+			        </div>
+			        <div >
+			        <span xtype="tree"
+				config=" id:'workFlowTree' , url:'${request.getContextPath()}/workFlowTrees/queryDataTreeByPid',remove:page.doDelete , edit : page.doEdit,onClick : page.doLoadOper "></span>
+			        </div>
+			  </div>
+		</div>
+	</div>
+	<div class="ui-layout-center" style="display: none;height:100%;">
+		<div class="container-fluid" style="margin-top: 0em;height:100%;">
+			<iframe id="workflowiframe" name="workflowiframe" width=100%
+				height=100% frameborder=0 src=""></iframe>
+		</div>
+	</div>
+	<#include "classpath:com/cloudcode/framework/common/ftl/require.ftl"/>
+	<script type="text/javascript">
+	var page={};
+requirejs(['jquery','jquery','Request','jqueryui','main','layout','tree'], function( $, jQuery,Request ) {
+	var params = $.cc.getIframeParams();
+	var width = 720;
+	var height = 450
+	myLayout = $('body').layout({
 			west__size : 300,
 			east__size : 0,
 			// RESIZE Accordion widget when panes resize
 			west__onresize : $.layout.callbacks.resizePaneAccordions,
 			east__onresize : $.layout.callbacks.resizePaneAccordions
 		});
-
-		// ACCORDION - in the West pane
-		$("#accordion1").accordion({
-			collapsible : true,
-			heightStyle : "fill"
-		});
-	});
-	$(function () {
-		   $('#btnAdd').click( function() {
-		   			$( "#divInDialog" ).dialog({
-					 	 modal: true,
-					 	 width:800,
-						 open: function(event, ui) {
-				 		 	  $(this).load('${request.getContextPath()}/workFlowTrees/create');
-					 	 },	   
-					    close: function (event, ui) {  
-					       $('#btnRefresh').trigger('click');
-					    }  
-					});
-		   });
-		   $('#btnRefresh').click( function() {
-		   		$.fn.zTree.init($("#workFlowTree"), setting);
-		   });
-	});
-	var setting = {
-			edit: {
-				enable: true
-			},
-			view: {
-				dblClickExpand: false,
-				expandSpeed:"",
-				addHoverDom: addHoverDom,
-				removeHoverDom: removeHoverDom,
-				selectedMulti: false
-			},
-			data: {
-				simpleData: {
-					enable: true
-				}
-			},
-			callback: {
-				beforeClick: beforeClick,
-				onClick: onCheck,
-				beforeRemove: beforeRemove,
-				beforeEditName: beforeEditName
-			},
-			async: {
-		        enable: true,
-		        async : true, 
-		      	dataType: 'JSON',
-		        //返回的JSON数据的名字
-		        dataName: 'treeNodes',
-		        autoParam:["id"],
-		        url:'${request.getContextPath()}/workFlowTrees/queryDataTreeByPid'
-		       }
-		};
-		function addHoverDom(treeId, treeNode){
-			var sObj = $("#" + treeNode.tId + "_span");
-			if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
-			var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
-				+ "' title='add node' onfocus='this.blur();'></span>";
-			sObj.after(addStr);
-			var btn = $("#addBtn_"+treeNode.tId);
-			if (btn) btn.bind("click", function(){
-				 $('#btnAdd').trigger("click");
-				return false;
-			});
-			return false;
-		}
-		function removeHoverDom(treeId, treeNode){
-			$("#addBtn_"+treeNode.tId).unbind().remove();
-		}		
-		function beforeRemove(treeId, treeNode){
+		page.doDelete =function (treeNode){
 			 $.ajax({
 			        url: '${request.getContextPath()}/workFlowTrees/deleteAll',
 			        type: 'post',
@@ -143,23 +92,7 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 			         }
 			    });
 		}
-		function beforeEditName(treeId, treeNode){
-			$( "#divInDialog" ).dialog({
-			 	 modal: true,
-			 	 width:800,
-				 open: function(event, ui) {
-		 		 	  $(this).load('${request.getContextPath()}/workFlowTrees/'+treeNode.id+'/update');
-			 	 },	   
-			    close: function (event, ui) {  
-			       $('#btnRefresh').trigger('click');
-			    }  
-			});
-			return false;
-		}
-		function beforeClick(treeId, treeNode) {
-		}
-		
-		function onCheck(e, treeId, treeNode) {
+		 page.doLoadOper=function(treeNode) {
 			var iframe = window.frames['workflowiframe'];
 			 $.ajax({
 				        url: '${request.getContextPath()}/workFlowInfos/'+treeNode.id+'/findObjectByDataId',
@@ -192,35 +125,30 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 				       }
 			    });
 		}
-		$(document).ready(function(){
-			$.fn.zTree.init($("#workFlowTree"), setting);
-		});
+		var options={};
+		options.title='添加';
+		options.width=1000;
+		options.height=800;
+		options.params={
+			callback : function(data) {
+			  $('#btnRefresh').trigger('click');
+			}
+		};
+		page.doEdit=function(treeNode){
+			options.url='${request.getContextPath()}/workFlowTrees/'+treeNode.id+'/update';
+			Dialog.open(options);
+		}
+		page.Add=function(){
+			options.url='${request.getContextPath()}/workFlowTrees/create';
+			Dialog.open(options);
+		}
+		page.Refresh=function(){
+		
+		}
+	$("[xtype]").each(function() {
+		$(this).render('initRender');
+	});
+});
 </script>
-	<style type="text/css">
-.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
-	</style>
-</head>
-<body>
-	<div class="ui-layout-center" style="display: none;height:100%;">
-		<div class="container-fluid" style="margin-top: 0em;height:100%;">
-			<iframe id="workflowiframe" name="workflowiframe" width=100%
-				height=100% frameborder=0 src="${request.getContextPath()}/wf/workfloweditor.jsp"></iframe>
-		</div>
-	</div>
-	<div class="panel ui-layout-west" style="display: none;">
-		<div class="panel panel-default">
-			  <div class="panel-body">
-			  <div class="container-fluid">
-			        <button id="btnAdd" class="ui-button-success">添加</button>			      
-			        <button id="btnRefresh" class="ui-button-info">刷新</button>
-			        </div>
-			        <div class="container-fluid">
-			        <ul id="workFlowTree" class="ztree">
-			        </div>
-			  </div>
-		</div>
-	</div>
-	<div id="divInDialog" style="display:none">
-	</div>
 </body>
 </html>
