@@ -7,7 +7,7 @@
 
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true"> 
 <div xtype="hh_content">
-<div class="container" id="layout">
+<div class="container" id="layout" style="width: 100%;">
 <form id="form" xtype="form">
  <span xtype="text" config=" hidden:true,name : 'id'"></span>
   <div class="form-org">
@@ -63,8 +63,8 @@ requirejs(['jquery','jquery','Request','jqueryui','main','text','select','date',
 	
 	page.save=function () {
 		$.cc.validation.check('form', function(formData) {
-			if(formData.code ==''){
-			    formData.code='root';
+			if(formData.node ==''){
+			    formData.node='root';
 			 }
 			var url='${request.getContextPath()}/workFlowTrees/createWorkFlowTree';
 			if('${entityAction}' =='update'){

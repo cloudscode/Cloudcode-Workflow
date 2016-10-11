@@ -64,7 +64,7 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 	<div class="ui-layout-center" style="display: none;height:100%;">
 		<div class="container-fluid" style="margin-top: 0em;height:100%;">
 			<iframe id="workflowiframe" name="workflowiframe" width=100%
-				height=100% frameborder=0 src=""></iframe>
+				height=100% frameborder=0 src="${request.getContextPath()}/wf/workfloweditor.jsp"></iframe>
 		</div>
 	</div>
 	<#include "classpath:com/cloudcode/framework/common/ftl/require.ftl"/>
@@ -73,7 +73,7 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 requirejs(['jquery','jquery','Request','jqueryui','main','layout','tree'], function( $, jQuery,Request ) {
 	var params = $.cc.getIframeParams();
 	var width = 720;
-	var height = 450
+	var height = 350
 	myLayout = $('body').layout({
 			west__size : 300,
 			east__size : 0,
@@ -94,6 +94,41 @@ requirejs(['jquery','jquery','Request','jqueryui','main','layout','tree'], funct
 		}
 		 page.doLoadOper=function(treeNode) {
 			var iframe = window.frames['workflowiframe'];
+			Request
+					.request(
+							'${request.getContextPath()}/workFlowInfos/'+treeNode.id+'/findObjectByDataId',
+							{
+								data : {
+								},
+								defaultMsg : false,
+								callback : function(data) {
+									var object = data.result;
+				       		var graph = iframe.mxDocument.graph;
+									iframe.dataId = treeNode.id;
+									iframe.workflowName = treeNode.text;
+									if (object != null) {
+										iframe.objectId = object.id;
+										var mxgraphXml = object.mxgraphXml;
+										var xml = iframe.createXml(mxgraphXml);
+										var dec = new iframe.mxCodec(
+												xml.documentElement.ownerDocument);
+										dec.decode(xml.documentElement, graph
+												.getModel());
+									} else {
+										iframe.objectId = '';
+										var xml = iframe
+												.createXml('<mxGraphModel><root><Workflow label="'
+														+ treeNode.text
+														+ '" description="" href="" id="0" hrefParams="" data="{}"><mxCell/></Workflow><Layer label="Default Layer" id="1"><mxCell parent="0"/></Layer></root></mxGraphModel>');
+										var dec = new iframe.mxCodec(
+												xml.documentElement.ownerDocument);
+										dec.decode(xml.documentElement, graph
+												.getModel());
+									}
+				       }
+							});
+							return;
+								
 			 $.ajax({
 				        url: '${request.getContextPath()}/workFlowInfos/'+treeNode.id+'/findObjectByDataId',
 				        type: 'post',

@@ -27,6 +27,7 @@ import com.cloudcode.workflow.dao.WorkFlowTreeDao;
 import com.cloudcode.workflow.model.WorkFlowTree;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/workFlowTrees")
@@ -59,7 +60,6 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 	public ModelAndView workFlowTreeList() {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/tree/list.ftl");
-		modelAndView.addObject("result", "cloudcode");
 		return modelAndView;
 	}
 
@@ -67,7 +67,6 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 	public ModelAndView create() {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/tree/detail.ftl");
-		modelAndView.addObject("result", "cloudcode");
 		modelAndView.addObject("entityAction", "create");
 		return modelAndView;
 	}
@@ -77,7 +76,8 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 		WorkFlowTree workFlowTree = workFlowTreeDao.loadObject(id);
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/tree/detail.ftl");
-		modelAndView.addObject("workFlowTree", workFlowTree);
+		JSONObject json = JSONObject.fromObject(workFlowTree);
+		modelAndView.addObject("entity",json.toString() );
 		modelAndView.addObject("entityAction", "update");
 		return modelAndView;
 	}
@@ -126,8 +126,8 @@ public class WorkFlowTreeController extends CrudController<WorkFlowTree> {
 				maps.put("isParent",true);
 			}
 			else{
-				maps.put("leaf","0");
-				maps.put("isParent",false);
+				maps.put("leaf","1");
+				maps.put("isParent",true);
 			}
 			//maps.put("isParent", workFlowTree.getNode()==null?false:true);
 			listMap.add(maps);

@@ -2,35 +2,36 @@ package com.cloudcode.workflow.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.core.annotation.Order;
 
 import com.cloudcode.framework.model.BaseModelObject;
 import com.cloudcode.workflow.ProjectConfig;
 
 @Entity(name = ProjectConfig.NAME + "info")
 @Table(name = ProjectConfig.NAME + "_info")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Order
-@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Order
+//@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 public class WorkFlowInfo extends BaseModelObject {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2224152783823145242L;
+	@Column(columnDefinition = "LONGTEXT")
 	private String mxgraphXml;
+	@Column(columnDefinition = "LONGTEXT")
 	private String activitiXml;
+	@Column(columnDefinition = "LONGBLOB")
 	private byte[] activitiImg;
+	@Column(nullable = false, length = 36)
 	private String dataId;
+	@Column(columnDefinition = "LONGTEXT")
 	private String rootObject;
+	@Column(columnDefinition = "LONGTEXT")
 	private String cellObjectList;
+	@Column(length = 64, name = "PDID")
 	private String pdid;
 	
-	@Lob
 	public String getMxgraphXml() {
 		return mxgraphXml;
 	}
@@ -39,7 +40,6 @@ public class WorkFlowInfo extends BaseModelObject {
 		this.mxgraphXml = mxgraphXml;
 	}
 
-	@Lob
 	public String getActivitiXml() {
 		return activitiXml;
 	}
@@ -48,7 +48,6 @@ public class WorkFlowInfo extends BaseModelObject {
 		this.activitiXml = activitiXml;
 	}
 
-	@Lob
 	public byte[] getActivitiImg() {
 		return activitiImg;
 	}
@@ -57,7 +56,6 @@ public class WorkFlowInfo extends BaseModelObject {
 		this.activitiImg = activitiImg;
 	}
 
-	@Column(nullable = false, length = 36)
 	public String getDataId() {
 		return dataId;
 	}
@@ -66,7 +64,6 @@ public class WorkFlowInfo extends BaseModelObject {
 		this.dataId = dataId;
 	}
 
-	@Lob
 	public String getRootObject() {
 		return rootObject;
 	}
@@ -75,7 +72,6 @@ public class WorkFlowInfo extends BaseModelObject {
 		this.rootObject = rootObject;
 	}
 
-	@Lob
 	public String getCellObjectList() {
 		return cellObjectList;
 	}
@@ -83,7 +79,7 @@ public class WorkFlowInfo extends BaseModelObject {
 	public void setCellObjectList(String cellObjectList) {
 		this.cellObjectList = cellObjectList;
 	}
-	@Column(length = 64, name = "PDID")
+	
 	public String getPdid() {
 		return pdid;
 	}
