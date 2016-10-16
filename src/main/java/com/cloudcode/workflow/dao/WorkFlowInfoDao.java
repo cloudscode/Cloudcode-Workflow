@@ -61,8 +61,9 @@ public class WorkFlowInfoDao extends BaseModelObjectDao<WorkFlowInfo> {
 		}
 		// HttpServletRequest request = ServletActionContext.getRequest();
 		String path = request.getContextPath();
+		//imgxml="<output><fontfamily family=\"Arial,Helvetica\"/><fontsize size=\"11\"/><shadowcolor color=\"gray\"/><shadowalpha alpha=\"1\"/><shadowoffset dx=\"2\" dy=\"3\"/><save/><shadow enabled=\"1\"/><image x=\"190\" y=\"230\" w=\"40\" h=\"40\" src=\"http://localhost:8080/hhcommon/opensource/mxgraph/examples/editors/wfimg/userTask_no.gif\" aspect=\"1\" flipH=\"0\" flipV=\"0\"/><restore/><save/><fontcolor color=\"black\"/><fontbackgroundcolor color=\"white\"/><fontsize size=\"12\"/><fontstyle style=\"1\"/><text x=\"210\" y=\"272\" w=\"36\" h=\"36\" str=\"用户任务\" align=\"center\" valign=\"top\" wrap=\"0\" format=\"\" overflow=\"visible\" clip=\"0\" rotation=\"0\"/><restore/></output>";
 		byte[] imageByte = ImageUtil.exportImage(imageWidth, imageHeight,
-				imgxml.replaceAll(path + "/jsp/", ""));
+				imgxml);
 		workFlowInfo.setActivitiImg(imageByte);
 		if (Check.isEmpty(workFlowInfo.getId())) {
 			workFlowInfo.setId("WORK"

@@ -6,46 +6,52 @@
    <script type="text/javascript" src="${request.getContextPath()}/static/mxgraph/examples/editors/properties/jqueruiproperties.js"></script> 
 </head>
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true"> 
-<div id="dialogDiv">
-<div class="container" id="layout">
-<form role="form" class="form-horizontal" id="myFormId" action="${request.getContextPath()}/users/createUser" method="post">
+<div xtype="hh_content">
+<div class="container" id="layout" style="width: 100%;">
+<form id="form" xtype="form">
   <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">名称</label>
 	    <div class="col-sm-10">
-	      <input type="text" name="label" class="form-control" id="label" placeholder="名称">
+	       <span xtype="text" config=" name : 'label',required :true"></span>
 	    </div>
     </div>
     <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-       <button type="button" id="updateButton" class="btn btn-default">确定</button>
-       <button type="button" id="cancelButton" class="btn btn-warning">取消</button>
+       <span xtype="button" config="text:'确定' , onClick : page.save "></span>
+       <span xtype="button" config="text:'取消' , onClick : Dialog.close "></span>
     </div>
   </div>
    <input type="hidden" value="" id="oid" name="id" >
 </form>
 
 </div>
-<#include "classpath:com/cloudcode/framework/common/ftl/vendor.ftl"/>
+<#include "classpath:com/cloudcode/framework/common/ftl/require.ftl"/>
 <script type="text/javascript">
-var hm = $("body").wHumanMsg();
 var height = 350;
 var width = 600;
 var params = window.params;//.parent.dialog.dialog("option","params");
-var object = params.object;
-$(function () {
-
-$("form").setValue(object);
-  $('#updateButton').click( function() {
-  		var values = $('form#myFormId').serializeObject();
+//var object = params.object;
+var page={};
+requirejs(['jquery','jquery','Request','jqueryui','main','text','select','date','radio','checkbox','textarea','password','ckeditor','button','validation','Request','combobox'], function( $, jQuery,Request ) {
+	var params = $.cc.getIframeParams();
+	var width = 720;
+	var height = 450
+	$("[xtype=form]").each(function() {
+		var config = $.cc.getConfig($(this));
+		if ($(this).is('form')) {
+			$.cc.validation.validation($(this), config);
+		}
+	});
+	
+	page.save=function () {
 		saveProperties(values);
-  	    $('body').wHumanMsg('theme', 'black').wHumanMsg('msg', '数据保存成功！', {fadeIn: 300, fadeOut: 300});
-  	    $('.ui-dialog-titlebar-close').trigger('click');
-  });
-  
-   $('#cancelButton').click( function() {
-   		$('body').wHumanMsg('theme', 'black').wHumanMsg('msg', '数据保存成功！', {fadeIn: 300, fadeOut: 300});
-  	    $('.ui-dialog-titlebar-close').trigger('click');
-  });
+	};
+	page.cancel=function () {
+		saveProperties(values);
+	};
+	$("[xtype]").each(function() {
+		$(this).render('initRender');
+	});
 });
 </script>
 </div>

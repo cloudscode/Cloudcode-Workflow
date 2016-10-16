@@ -64,7 +64,7 @@ h3,h4 { /* Headers & Footer in Center & East panes */
 	<div class="ui-layout-center" style="display: none;height:100%;">
 		<div class="container-fluid" style="margin-top: 0em;height:100%;">
 			<iframe id="workflowiframe" name="workflowiframe" width=100%
-				height=100% frameborder=0 src="${request.getContextPath()}/wf/workfloweditor.jsp"></iframe>
+				height=100% frameborder=0 src="${request.getContextPath()}/workFlowMenus/workfloweditor"></iframe>
 		</div>
 	</div>
 	<#include "classpath:com/cloudcode/framework/common/ftl/require.ftl"/>

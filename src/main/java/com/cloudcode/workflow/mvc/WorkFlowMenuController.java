@@ -183,4 +183,17 @@ public class WorkFlowMenuController extends CrudController<WorkFlowInfo>{
 		modelAndView.addObject("text", "请选择要新建的流程！！！");
 		return modelAndView;
 	}
+	/**
+	 * 设计器画布
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/workfloweditor")
+	public ModelAndView workfloweditor(HttpServletRequest request) {
+		String dataId = request.getParameter("dataId");
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("classpath:com/cloudcode/workflow/ftl/menu/workfloweditor.ftl");
+		modelAndView.addObject("dataId",dataId);
+		return modelAndView;
+	}
 }

@@ -32,7 +32,7 @@ public class ImageUtil {
 	 *            graph对应的xml代码
 	 * @throws IOException
 	 */
-	public static byte[] exportImage(int w, int h, String imageXML) {
+	public static byte[] exportImage(int w, int h, String imageXML){
 		BufferedImage image = mxUtils.createBufferedImage(w, h, Color.WHITE);
 		Graphics2D g2 = image.createGraphics();
 		mxUtils.setAntiAlias(g2, true, true);
@@ -40,17 +40,17 @@ public class ImageUtil {
 		gc2.setAutoAntiAlias(true);
 		parseXmlSax(imageXML, gc2);
 		gc2.close();
-		// ImageIO.write(image, "png", png);
+//		ImageIO.write(image, "png", png);
 		return imageToByte(image, "png");
 	}
 
-	public static byte[] imageToByte(BufferedImage bi, String format) {
+	public static byte[] imageToByte(BufferedImage bi, String format){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			ImageIO.write(bi, format, baos);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
+		}finally{
 			try {
 				baos.flush();
 				baos.close();
